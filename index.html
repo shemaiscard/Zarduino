@@ -9,9 +9,9 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Zarduino" />
     <link rel="manifest" href="/site.webmanifest" />
-    <title>Arduino 4WD Car Controller - Xbox Steering ✨</title>
+    <title>Arduino 4WD Car Controller - Responsive</title>
     <style>
-        /* General styles */
+        /* General styles - Mobile First */
         * {
             margin: 0;
             padding: 0;
@@ -25,113 +25,113 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 10px; /* Reduced padding for mobile */
             color: white;
+            font-size: 14px; /* Base font size for mobile */
             transition: background-color 0.3s, color 0.3s; 
         }
 
         .container {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            max-width: 800px;
+            border-radius: 15px; /* Slightly reduced radius */
+            padding: 15px; /* Reduced padding for mobile */
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25); /* Adjusted shadow */
             width: 100%;
-            transition: background-color 0.3s; 
+            max-width: 400px; /* Max width for mobile-like view, expands with media queries */
+            transition: background-color 0.3s, max-width 0.3s ease-in-out; 
         }
 
         h1 {
             text-align: center;
-            margin-bottom: 20px; /* Adjusted margin */
-            font-size: 2.2em; /* Adjusted size */
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 15px; 
+            font-size: 1.8em; /* Adjusted for mobile */
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
         }
          h2 {
             text-align: center;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-            color: #f0f0f0;
+            margin-bottom: 15px;
+            font-size: 1.3em; /* Adjusted for mobile */
+            color: #e0e0e0; /* Lighter subtitle */
         }
-
 
         .status-panel {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Adjusted minmax */
-            gap: 15px; /* Adjusted gap */
-            margin-bottom: 25px; /* Adjusted margin */
+            grid-template-columns: 1fr; /* Single column for mobile */
+            gap: 10px; 
+            margin-bottom: 20px; 
         }
 
         .status-card {
             background: rgba(255, 255, 255, 0.15);
-            border-radius: 15px;
-            padding: 15px; /* Adjusted padding */
+            border-radius: 10px; 
+            padding: 12px; 
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.2);
             transition: background-color 0.3s, border-color 0.3s;
         }
 
         .status-card h3 {
-            margin-bottom: 8px; /* Adjusted margin */
-            font-size: 1em; /* Adjusted font size */
+            margin-bottom: 6px; 
+            font-size: 0.9em; 
             color: #fff; 
         }
 
         .status-value {
-            font-size: 1.5em; /* Adjusted font size */
+            font-size: 1.4em; 
             font-weight: bold;
             color: #4CAF50; 
         }
 
-        .control-section, .gemini-section {
+        .control-section {
             display: grid;
-            grid-template-columns: 1fr; /* Default to 1 column */
-            gap: 20px; /* Adjusted gap */
-            margin-bottom: 25px; /* Adjusted margin */
+            grid-template-columns: 1fr; 
+            gap: 15px; 
+            margin-bottom: 20px; 
         }
         
-        /* Make control section 2 columns on wider screens */
-        @media (min-width: 640px) {
-            .control-section {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-
-        .bluetooth-controls, .car-controls, .gemini-controls {
+        .bluetooth-controls, .car-controls {
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 20px; /* Adjusted padding */
+            border-radius: 10px; 
+            padding: 15px; 
             transition: background-color 0.3s; 
         }
 
-        .bluetooth-controls h3, .car-controls h3, .gemini-controls h3 {
-            margin-bottom: 15px; /* Adjusted margin */
+        .bluetooth-controls h3, .car-controls h3 {
+            margin-bottom: 12px; 
             text-align: center;
             color: #fff; 
-            font-size: 1.2em;
+            font-size: 1.1em; /* Adjusted for mobile */
         }
 
         .btn {
             background: linear-gradient(45deg, #4CAF50, #45a049);
             color: white;
             border: none;
-            padding: 10px 20px; /* Adjusted padding */
+            padding: 12px 18px; /* Adjusted padding for touch targets */
             border-radius: 8px;
             cursor: pointer;
-            font-size: 15px; /* Adjusted font size */
+            font-size: 1em; /* Relative font size */
             margin: 5px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            width: calc(100% - 10px); /* Make buttons take more width on mobile */
+            display: block; /* Make buttons block to stack them */
+        }
+         .bluetooth-controls .btn, .car-controls .btn:not(.directional-pad .btn) { /* Target specific buttons */
+            width: calc(100% - 10px); 
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        .btn:hover:not(:disabled) { /* Apply hover only if not disabled */
+
+        .btn:hover:not(:disabled) { 
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
         .btn:disabled {
-            background: #555; /* Darker grey for disabled */
+            background: #555; 
             color: #999;
             cursor: not-allowed;
             transform: none;
@@ -141,10 +141,6 @@
         .btn.danger {
             background: linear-gradient(45deg, #f44336, #d32f2f);
         }
-        .btn.info {
-             background: linear-gradient(45deg, #2196F3, #1976D2);
-        }
-
 
         .directional-pad {
             display: grid;
@@ -152,18 +148,19 @@
                 ". up ."
                 "left center right"
                 ". down .";
-            gap: 8px; /* Adjusted gap */
-            max-width: 180px; /* Adjusted size */
-            margin: 15px auto; /* Adjusted margin */
+            gap: 8px; 
+            max-width: 160px; /* Adjusted for mobile */
+            margin: 15px auto; 
         }
 
-        .directional-pad .btn {
-            width: 50px; /* Adjusted size */
-            height: 50px; /* Adjusted size */
+        .directional-pad .btn { /* Override width for d-pad buttons */
+            width: 48px; 
+            height: 48px; 
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px; /* Adjusted font size */
+            font-size: 1.5em; /* Larger icons for touch */
+            padding: 0; /* Remove padding to rely on width/height */
         }
         .btn-up { grid-area: up; }
         .btn-down { grid-area: down; }
@@ -176,42 +173,48 @@
 
         .gamepad-info {
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 15px; /* Adjusted padding */
-            margin-top: 20px; /* Adjusted margin */
+            border-radius: 10px; 
+            padding: 12px; 
+            margin-top: 15px; 
             text-align: center;
             transition: background-color 0.3s;
         }
+        .gamepad-info .btn { /* Gamepad connect button */
+             width: calc(100% - 10px); 
+             margin-left: auto;
+             margin-right: auto;
+        }
+
 
         .gamepad-status {
-            font-size: 1em; /* Adjusted font size */
-            margin-bottom: 10px; /* Adjusted margin */
+            font-size: 0.9em; 
+            margin-bottom: 8px; 
         }
 
         .gamepad-instructions {
             background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            padding: 10px; /* Adjusted padding */
-            margin-top: 10px; /* Adjusted margin */
+            border-radius: 8px; 
+            padding: 10px; 
+            margin-top: 10px; 
             transition: background-color 0.3s;
         }
 
         .gamepad-instructions h4 {
-            margin-bottom: 8px; /* Adjusted margin */
+            margin-bottom: 6px; 
             color: #4CAF50; 
-            font-size: 0.9em;
+            font-size: 0.85em;
         }
 
         .gamepad-instructions ul {
             text-align: left;
             list-style: none;
             padding-left: 0;
-            font-size: 0.85em;
+            font-size: 0.8em;
         }
 
         .gamepad-instructions li {
-            margin: 4px 0; /* Adjusted margin */
-            padding-left: 18px; /* Adjusted padding */
+            margin: 3px 0; 
+            padding-left: 16px; 
             position: relative;
         }
 
@@ -222,12 +225,12 @@
         }
 
         .connection-indicator {
-            width: 10px; /* Adjusted size */
-            height: 10px; /* Adjusted size */
+            width: 10px; 
+            height: 10px; 
             border-radius: 50%;
             background: #f44336; 
             display: inline-block;
-            margin-left: 8px; /* Adjusted margin */
+            margin-left: 6px; 
             animation: pulse 2s infinite;
         }
 
@@ -243,27 +246,28 @@
 
         .dark-mode-toggle {
             position: fixed;
-            top: 15px; /* Adjusted position */
-            right: 15px; /* Adjusted position */
+            top: 10px; 
+            right: 10px; 
             z-index: 1000;
         }
 
         .dark-mode-toggle label {
             cursor: pointer;
-            font-size: 22px; /* Adjusted size */
+            font-size: 1.8em; /* Larger toggle for touch */
         }
 
         .dark-mode-toggle input[type="checkbox"] {
             display: none; 
         }
         
+        /* Dark Mode Styles (mostly unchanged, but will inherit mobile-first base) */
         body.dark-mode {
-            background: #121212; /* Darker background for dark mode */
+            background: #121212; 
             color: #e0e0e0; 
         }
 
         body.dark-mode .container {
-            background: rgba(30, 30, 30, 0.5); /* Darker container for dark mode */
+            background: rgba(30, 30, 30, 0.5); 
             backdrop-filter: blur(8px); 
         }
 
@@ -276,13 +280,11 @@
         body.dark-mode .status-value { color: #50fa7b; }
 
         body.dark-mode .bluetooth-controls, 
-        body.dark-mode .car-controls,
-        body.dark-mode .gemini-controls {
+        body.dark-mode .car-controls {
             background: rgba(35, 35, 35, 0.6);
         }
         body.dark-mode .bluetooth-controls h3, 
-        body.dark-mode .car-controls h3,
-        body.dark-mode .gemini-controls h3 { color: #ccc; }
+        body.dark-mode .car-controls h3 { color: #ccc; }
 
         body.dark-mode .gamepad-info { background: rgba(35, 35, 35, 0.6); }
         body.dark-mode .gamepad-instructions { background: rgba(50, 50, 50, 0.5); }
@@ -290,66 +292,108 @@
         
         footer {
             text-align: center;
-            padding: 15px; /* Adjusted padding */
+            padding: 10px; 
             margin-top: auto; 
             width: 100%;
             color: white; 
-            font-size: 0.85em; /* Adjusted font size */
+            font-size: 0.8em; 
         }
         body.dark-mode footer { color: #aaa; }
 
-        /* Gemini Section Specifics */
-        .gemini-controls textarea {
-            width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.3);
-            background-color: rgba(255,255,255,0.1);
-            color: white;
-            min-height: 60px;
-            margin-bottom: 10px;
-            font-family: inherit;
-            font-size: 0.9em;
-        }
-        body.dark-mode .gemini-controls textarea {
-            border: 1px solid rgba(255,255,255,0.2);
-            background-color: rgba(0,0,0,0.2);
-            color: #e0e0e0;
-        }
-        .gemini-controls .output-area {
-            background-color: rgba(0,0,0,0.2);
-            padding: 10px;
-            border-radius: 8px;
-            min-height: 40px;
-            margin-top: 10px;
-            white-space: pre-wrap; /* To show formatted command sequence */
-            word-wrap: break-word;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.9em;
-        }
-         body.dark-mode .gemini-controls .output-area {
-            background-color: rgba(0,0,0,0.4);
-         }
-        .loading-indicator {
-            display: none; /* Hidden by default */
-            text-align: center;
-            margin: 10px 0;
-            font-style: italic;
-        }
+        /* Tablet Styles */
+        @media (min-width: 600px) {
+            body {
+                padding: 20px;
+                font-size: 15px; /* Slightly larger base font */
+            }
+            .container {
+                padding: 20px;
+                max-width: 600px; /* Wider container for tablets */
+                border-radius: 20px;
+            }
+            h1 { font-size: 2em; margin-bottom: 20px; }
+            h2 { font-size: 1.4em; margin-bottom: 20px; }
+
+            .status-panel {
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); /* Allow more cards per row */
+                gap: 15px;
+                margin-bottom: 25px;
+            }
+            .status-card { padding: 15px; border-radius: 15px;}
+            .status-card h3 { font-size: 1em; }
+            .status-value { font-size: 1.6em; }
 
 
-        @media (max-width: 768px) {
-            h1 { font-size: 2em; }
-            .control-section, .gemini-section { grid-template-columns: 1fr; }
-            .status-panel { grid-template-columns: 1fr; }
-            .dark-mode-toggle { top: 10px; right: 10px; }
-            .dark-mode-toggle label { font-size: 20px; }
+            .control-section {
+                grid-template-columns: 1fr 1fr; /* Two columns for controls */
+                gap: 20px;
+                margin-bottom: 25px;
+            }
+            .bluetooth-controls, .car-controls { padding: 20px; border-radius: 15px;}
+            .bluetooth-controls h3, .car-controls h3 { font-size: 1.2em; margin-bottom: 15px;}
+
+            .btn {
+                padding: 12px 22px;
+                font-size: 1em;
+                 width: auto; /* Allow buttons to size to content */
+                 display: inline-block; /* Allow side-by-side */
+            }
+            .bluetooth-controls .btn, .car-controls .btn:not(.directional-pad .btn), .gamepad-info .btn {
+                 width: auto; /* Reset width for larger screens */
+            }
+
+
+            .directional-pad { max-width: 180px; }
+            .directional-pad .btn { width: 55px; height: 55px; font-size: 1.6em; }
+            
+            .gamepad-info { padding: 15px; margin-top: 20px; border-radius: 15px;}
+            .gamepad-status { font-size: 1em; margin-bottom: 10px; }
+            .gamepad-instructions { padding: 12px; border-radius: 10px;}
+            .gamepad-instructions h4 { font-size: 0.9em; }
+            .gamepad-instructions ul { font-size: 0.85em; }
+
+            .dark-mode-toggle { top: 15px; right: 15px; }
+            .dark-mode-toggle label { font-size: 2em; }
+            footer { font-size: 0.85em; padding: 15px;}
         }
-        @media (max-width: 480px) {
-            h1 { font-size: 1.8em; }
-            .container { padding: 20px; }
-            .btn { padding: 8px 15px; font-size: 14px; }
-            .directional-pad .btn { width: 45px; height: 45px; font-size: 16px; }
+
+        /* Desktop Styles */
+        @media (min-width: 992px) {
+            body {
+                font-size: 16px; /* Standard desktop font size */
+            }
+            .container {
+                padding: 30px;
+                max-width: 800px; /* Max width for desktop */
+            }
+            h1 { font-size: 2.5em; margin-bottom: 30px;}
+            h2 { font-size: 1.5em; margin-bottom: 25px;}
+
+            .status-panel {
+                 grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                 gap: 20px;
+                 margin-bottom: 30px;
+            }
+             .status-card h3 { font-size: 1.1em; }
+            .status-value { font-size: 1.8em; }
+
+
+            .bluetooth-controls h3, .car-controls h3 { font-size: 1.3em; margin-bottom: 20px;}
+            
+            .btn {
+                padding: 14px 24px;
+                font-size: 1em;
+            }
+            .directional-pad { max-width: 200px; }
+            .directional-pad .btn { width: 60px; height: 60px; font-size: 1.8em; }
+
+            .gamepad-info { padding: 20px; }
+            .gamepad-instructions { padding: 15px;}
+            .gamepad-instructions h4 { font-size: 1em; }
+            .gamepad-instructions ul { font-size: 0.9em; }
+
+            .dark-mode-toggle { top: 20px; right: 20px; }
+            footer { font-size: 0.9em; padding: 20px;}
         }
 
     </style>
@@ -362,7 +406,7 @@
 
     <div class="container">
         <h1>🚗 Arduino 4WD Car Controller</h1>
-        <h2>Xbox Steering & Gemini Features ✨</h2>
+        <h2>Xbox Steering</h2>
         
         <div class="status-panel">
             <div class="status-card">
@@ -398,35 +442,14 @@
                     <button class="btn btn-down" id="backwardBtn">↓</button>
                 </div>
                  <div style="text-align: center; margin-top: 10px;">
-                    <button class="btn" onclick="centerSteering()">Center Steering (App)</button>
+                    <button class="btn" onclick="centerSteering()">Center Steering</button>
                 </div>
             </div>
         </div>
-
-        <div class="gemini-section">
-            <div class="gemini-controls">
-                <h3>Gemini Powered Features ✨</h3>
-                <div>
-                    <h4>Generate Driving Command Sequence ✨</h4>
-                    <textarea id="drivingGoalInput" placeholder="e.g., Go forward a bit, turn right, and stop"></textarea>
-                    <button class="btn info" id="generateSequenceBtn" onclick="generateDrivingSequence()">Generate Sequence</button>
-                    <div class="loading-indicator" id="sequenceLoading">Generating sequence...</div>
-                    <div id="commandSequenceOutput" class="output-area" style="display:none;"></div>
-                    <button class="btn" id="executeSequenceBtn" onclick="executeGeneratedSequence()" style="display:none; margin-top:10px;">Execute Sequence</button>
-                </div>
-                <hr style="margin: 20px 0; border-color: rgba(255,255,255,0.2);">
-                <div>
-                    <h4>Get Car's Witty Status ✨</h4>
-                    <button class="btn info" id="wittyStatusBtn" onclick="getWittyStatus()">Ask Car for Status</button>
-                    <div class="loading-indicator" id="statusLoading">Thinking of something witty...</div>
-                </div>
-            </div>
-        </div>
-
 
         <div class="gamepad-info">
             <div class="gamepad-status" id="gamepadStatus">🎮 Xbox Controller: Not Connected</div>
-            <button class="btn" onclick="connectGamepad()">Connect Xbox Controller</button>
+            <button class="btn" id="connectGamepadBtn" onclick="connectGamepad()">Connect Xbox Controller</button>
             
             <div class="gamepad-instructions">
                 <h4>Xbox Controller Mapping:</h4>
@@ -450,26 +473,19 @@
         let bluetoothCharacteristic = null;
         let isConnected = false;
         let gamepadIndex = -1;
-        let lastCommand = ''; // Stores the last single command sent (f, b, l, r, s, c)
+        let lastCommandSent = ''; 
         let isMoving = false; 
-        let generatedCommandSequence = []; // To store sequence from Gemini
 
-        // Gamepad state tracking
         let lastGamepadState = {
             rightStickX: 0, 
             buttons: {}
         };
 
-        // DOM Elements
         const darkModeToggle = document.getElementById('darkModeToggle');
         const darkModeEmoji = document.getElementById('darkModeEmoji');
-        const drivingGoalInput = document.getElementById('drivingGoalInput');
-        const commandSequenceOutput = document.getElementById('commandSequenceOutput');
-        const executeSequenceBtn = document.getElementById('executeSequenceBtn');
-        const sequenceLoading = document.getElementById('sequenceLoading');
-        const statusLoading = document.getElementById('statusLoading');
-        const generateSequenceBtn = document.getElementById('generateSequenceBtn');
-        const wittyStatusBtn = document.getElementById('wittyStatusBtn');
+        const connectBtn = document.getElementById('connectBtn');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const connectGamepadBtn = document.getElementById('connectGamepadBtn');
 
 
         function setDarkMode(isDark) {
@@ -498,8 +514,8 @@
                 setDarkMode(false);
             }
             setupManualControls(); 
-            startGamepadPolling(); 
             updateModeDisplay(); 
+            updateConnectionStatus(); 
         });
 
         function updateModeDisplay() {
@@ -507,16 +523,14 @@
         }
 
         async function connectBluetooth() {
-            // Disable relevant buttons during connection attempt
-            document.getElementById('connectBtn').disabled = true;
-            wittyStatusBtn.disabled = true;
-            generateSequenceBtn.disabled = true;
+            connectBtn.disabled = true;
+            disconnectBtn.disabled = true; 
 
             try {
                 console.log('Requesting Bluetooth Device...');
                 bluetoothDevice = await navigator.bluetooth.requestDevice({
                     filters: [ 
-                        { name: 'HC-06' },
+                        { name: 'HC-06' }, 
                         { name: 'HC-05' },
                         { services: ['0000ffe0-0000-1000-8000-00805f9b34fb'] } 
                     ],
@@ -524,6 +538,7 @@
                 });
 
                 console.log('Connecting to GATT Server...');
+                bluetoothDevice.addEventListener('gattserverdisconnected', onDisconnected);
                 const server = await bluetoothDevice.gatt.connect();
                 
                 console.log('Getting Service...');
@@ -541,77 +556,79 @@
                 showCustomMessage('Bluetooth connected successfully!');
             } catch (error) {
                 console.error('Bluetooth connection failed:', error);
-                showCustomMessage('Bluetooth connection failed. Ensure car is on & discoverable.');
-                isConnected = false; // Ensure isConnected is false on failure
-                updateConnectionStatus(); // Update UI to reflect failure
-            } finally {
-                // Re-enable buttons based on connection status
-                 document.getElementById('connectBtn').disabled = isConnected;
-                 wittyStatusBtn.disabled = !isConnected;
-                 generateSequenceBtn.disabled = !isConnected;
-                 if(executeSequenceBtn) executeSequenceBtn.disabled = !isConnected || generatedCommandSequence.length === 0;
+                showCustomMessage(`Bluetooth connection failed: ${error.message}. Ensure car is on & discoverable.`);
+                isConnected = false; 
+                updateConnectionStatus(); 
             }
         }
-
-        async function disconnectBluetooth() {
-            if (bluetoothDevice && bluetoothDevice.gatt.connected) {
-                bluetoothDevice.gatt.disconnect();
-            }
+        
+        function onDisconnected() {
+            console.log('Bluetooth device disconnected.');
             isConnected = false;
             bluetoothDevice = null;
             bluetoothCharacteristic = null;
             updateConnectionStatus();
-            console.log('Disconnected.');
-            showCustomMessage('Bluetooth disconnected.');
+            showCustomMessage('Bluetooth device disconnected.');
+        }
+
+        async function disconnectBluetooth() {
+            if (bluetoothDevice && bluetoothDevice.gatt.connected) {
+                bluetoothDevice.removeEventListener('gattserverdisconnected', onDisconnected);
+                bluetoothDevice.gatt.disconnect();
+                console.log('Disconnected explicitly.');
+            } else {
+                 console.log('No active Bluetooth connection to disconnect or already disconnected.');
+            }
+            onDisconnected(); 
         }
 
         function updateConnectionStatus() {
-            const statusElement = document.getElementById('bluetoothStatus');
-            const connectBtn = document.getElementById('connectBtn');
-            const disconnectBtn = document.getElementById('disconnectBtn');
-            
             if (isConnected) {
-                statusElement.innerHTML = 'Connected <span class="connection-indicator connected"></span>';
+                document.getElementById('bluetoothStatus').innerHTML = 'Connected <span class="connection-indicator connected"></span>';
                 connectBtn.disabled = true;
                 disconnectBtn.disabled = false;
-                wittyStatusBtn.disabled = false;
-                generateSequenceBtn.disabled = false;
-                if(executeSequenceBtn) executeSequenceBtn.disabled = generatedCommandSequence.length === 0;
-
             } else {
-                statusElement.innerHTML = 'Disconnected <span class="connection-indicator"></span>';
+                document.getElementById('bluetoothStatus').innerHTML = 'Disconnected <span class="connection-indicator"></span>';
                 connectBtn.disabled = false;
                 disconnectBtn.disabled = true;
-                wittyStatusBtn.disabled = true;
-                generateSequenceBtn.disabled = true;
-                if(executeSequenceBtn) executeSequenceBtn.disabled = true;
             }
         }
         
         async function sendCommand(command) {
             if (!isConnected || !bluetoothCharacteristic) {
-                console.log('Not connected to car, command not sent:', command);
+                console.warn('Not connected to car. Command not sent:', command);
+                return;
+            }
+            if ((command === 'l' || command === 'r') && command === lastCommandSent) {
                 return;
             }
             try {
                 const encoder = new TextEncoder();
                 await bluetoothCharacteristic.writeValue(encoder.encode(command));
                 console.log('Sent command:', command);
-                lastCommand = command; // Update last single command
+                lastCommandSent = command; 
             } catch (error) {
                 console.error('Error sending command:', error);
-                showCustomMessage('Error sending command.');
+                showCustomMessage(`Error sending command: ${error.message}. Check connection.`);
+                if (error.name === 'NetworkError' || error.message.includes('GATT operation failed')) {
+                    console.log("Possible disconnection detected on send error.");
+                    onDisconnected(); 
+                }
             }
         }
 
         function handleBluetoothData(event) {
             const decoder = new TextDecoder();
             const data = decoder.decode(event.target.value);
-            console.log('Received:', data); 
-            
+            console.log('Received from Arduino:', data); 
             if (data.startsWith('ANGLE:')) {
-                const angle = parseInt(data.split(':')[1]);
-                updateAngleDisplay(angle);
+                const angleValue = data.split(':')[1].trim();
+                const angle = parseInt(angleValue);
+                if (!isNaN(angle)) {
+                    updateAngleDisplay(angle);
+                } else {
+                    console.warn("Received invalid angle data:", data);
+                }
             }
         }
 
@@ -633,10 +650,12 @@
             Object.entries(appMovementControls).forEach(([btnId, command]) => {
                 const btn = document.getElementById(btnId);
                 if (!btn) { console.error("Button not found:", btnId); return; }
-
-                const sendAndTrack = () => { if(isConnected) sendCommand(command); btn.style.transform = 'scale(0.95)'; isMoving = (command === 'f' || command === 'b'); };
+                const sendAndTrack = () => { 
+                    if(isConnected) sendCommand(command); 
+                    btn.style.transform = 'scale(0.95)'; 
+                    isMoving = (command === 'f' || command === 'b'); 
+                };
                 const resetStyle = () => { btn.style.transform = 'scale(1)';};
-
                 btn.addEventListener('mousedown', sendAndTrack);
                 btn.addEventListener('mouseup', resetStyle);
                 btn.addEventListener('mouseleave', resetStyle); 
@@ -663,29 +682,73 @@
         }
 
         function connectGamepad() {
+            if (gamepadIndex !== -1) { // If a gamepad is already connected, treat as disconnect
+                window.dispatchEvent(new GamepadEvent("gamepaddisconnected", { gamepad: { index: gamepadIndex, id: "Manual Disconnect"} }));
+                return;
+            }
+
             if (navigator.getGamepads) {
-                window.addEventListener("gamepadconnected", (e) => {
-                    console.log("Gamepad connected:", e.gamepad);
-                    gamepadIndex = e.gamepad.index;
-                    updateGamepadStatus(`🎮 ${e.gamepad.id}: Connected`);
-                });
-                window.addEventListener("gamepaddisconnected", (e) => {
-                    console.log("Gamepad disconnected:", e.gamepad);
-                    if (e.gamepad.index === gamepadIndex) { 
-                        gamepadIndex = -1;
-                        updateGamepadStatus('🎮 Xbox Controller: Not Connected');
-                    }
-                });
+                console.log('Gamepad API available. Setting up listeners...');
+                // Check for already connected gamepads first
                 const gamepads = navigator.getGamepads();
+                let foundGamepad = false;
                 for (let i = 0; i < gamepads.length; i++) {
-                    if (gamepads[i]) {
+                    if (gamepads[i] && gamepadIndex === -1) {
                         gamepadIndex = gamepads[i].index;
-                        updateGamepadStatus(`🎮 ${gamepads[i].id}: Connected`);
+                        updateGamepadStatus(`🎮 ${gamepads[i].id.substring(0,20)}...`);
+                        startGamepadPolling();
+                        connectGamepadBtn.textContent = "Disconnect Gamepad";
+                        connectGamepadBtn.classList.add("danger");
+                        foundGamepad = true;
+                        console.log("Found already connected gamepad:", gamepads[i].id);
                         break; 
                     }
                 }
+                if (!foundGamepad && gamepadIndex === -1) { // If no gamepad found yet, add listeners
+                     updateGamepadStatus('🎮 Waiting for gamepad...');
+                }
             } else {
                 showCustomMessage('Gamepad API not supported in this browser.');
+                if(connectGamepadBtn) connectGamepadBtn.disabled = true;
+            }
+        }
+        
+        let gamepadPollInterval = null;
+
+        window.addEventListener("gamepadconnected", (e) => {
+            console.log("Gamepad connected event:", e.gamepad.id, "Index:", e.gamepad.index);
+            if (gamepadIndex === -1) { // Connect the first gamepad detected if none is active
+                gamepadIndex = e.gamepad.index;
+                updateGamepadStatus(`🎮 ${e.gamepad.id.substring(0,20)}...`);
+                startGamepadPolling(); 
+                connectGamepadBtn.textContent = "Disconnect Gamepad";
+                connectGamepadBtn.classList.add("danger");
+            }
+        });
+
+        window.addEventListener("gamepaddisconnected", (e) => {
+            console.log("Gamepad disconnected event:", e.gamepad.id, "Index:", e.gamepad.index);
+            if (e.gamepad.index === gamepadIndex) { 
+                gamepadIndex = -1;
+                updateGamepadStatus('🎮 Xbox Controller: Not Connected');
+                stopGamepadPolling(); 
+                connectGamepadBtn.textContent = "Connect Xbox Controller";
+                connectGamepadBtn.classList.remove("danger");
+            }
+        });
+
+
+        function startGamepadPolling() {
+            if (gamepadPollInterval) clearInterval(gamepadPollInterval); 
+            gamepadPollInterval = setInterval(pollGamepad, 50); 
+            console.log("Gamepad polling started.");
+        }
+
+        function stopGamepadPolling() {
+            if (gamepadPollInterval) {
+                clearInterval(gamepadPollInterval);
+                gamepadPollInterval = null;
+                console.log("Gamepad polling stopped.");
             }
         }
 
@@ -693,16 +756,20 @@
             document.getElementById('gamepadStatus').textContent = status;
         }
 
-        function startGamepadPolling() {
-            setInterval(pollGamepad, 50); 
-        }
-
         function pollGamepad() {
-            if (gamepadIndex === -1 || !isConnected) return;
+            if (gamepadIndex === -1 || !isConnected) { 
+                return;
+            }
             const gamepad = navigator.getGamepads()[gamepadIndex];
-            if (!gamepad) return;
-            const deadzone = 0.25;
+            if (!gamepad) {
+                console.warn("Gamepad at index", gamepadIndex, "is null.");
+                if (gamepadIndex !== -1) { 
+                     window.dispatchEvent(new GamepadEvent("gamepaddisconnected", { gamepad: { index: gamepadIndex, id: "Unknown (null)"} }));
+                }
+                return;
+            }
 
+            const deadzone = 0.25;
             const rightStickX = gamepad.axes[2]; 
             if (Math.abs(rightStickX) > deadzone) {
                 if (rightStickX > deadzone && lastGamepadState.rightStickX <= deadzone) sendCommand('r');
@@ -713,155 +780,12 @@
             const buttons = gamepad.buttons;
             if (buttons[0] && buttons[0].pressed && (!lastGamepadState.buttons[0] || !lastGamepadState.buttons[0].pressed)) { sendCommand('s'); isMoving = false; console.log("Gamepad A: Stop"); }
             if (buttons[2] && buttons[2].pressed && (!lastGamepadState.buttons[2] || !lastGamepadState.buttons[2].pressed)) { sendCommand('c'); console.log("Gamepad X: Center"); }
-            if (buttons[3] && buttons[3].pressed && (!lastGamepadState.buttons[3] || !lastGamepadState.buttons[3].pressed)) { if (isConnected) disconnectBluetooth(); else connectBluetooth(); console.log("Gamepad Y: BT Toggle");}
+            if (buttons[3] && buttons[3].pressed && (!lastGamepadState.buttons[3] || !lastGamepadState.buttons[3].pressed)) { console.log("Gamepad Y: BT Toggle (currently disabled).");}
 
             lastGamepadState.buttons = {};
             buttons.forEach((button, index) => { lastGamepadState.buttons[index] = { pressed: button.pressed, value: button.value }; });
         }
         
-        // --- Gemini API Features ---
-        const GEMINI_API_KEY = ""; // Per instructions, leave empty. Handled by environment.
-        const GEMINI_API_URL_FLASH = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
-
-        async function callGeminiAPI(prompt) {
-            const payload = {
-                contents: [{ role: "user", parts: [{ text: prompt }] }]
-            };
-            try {
-                const response = await fetch(GEMINI_API_URL_FLASH, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (!response.ok) {
-                    const errorBody = await response.text();
-                    console.error("Gemini API Error HTTP Status:", response.status, errorBody);
-                    throw new Error(`Gemini API request failed with status ${response.status}`);
-                }
-                const result = await response.json();
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    return result.candidates[0].content.parts[0].text;
-                } else {
-                    console.error("Unexpected response structure from Gemini API:", result);
-                    if (result.promptFeedback) {
-                         console.error("Prompt Feedback:", result.promptFeedback);
-                         if (result.promptFeedback.blockReason) {
-                            return `Blocked: ${result.promptFeedback.blockReason}. Details: ${JSON.stringify(result.promptFeedback.safetyRatings)}`;
-                         }
-                    }
-                    return "Sorry, I couldn't generate a response right now.";
-                }
-            } catch (error) {
-                console.error("Error calling Gemini API:", error);
-                return `Error: ${error.message}. Check console for details.`;
-            }
-        }
-
-        async function generateDrivingSequence() {
-            if (!isConnected) {
-                showCustomMessage("Please connect to the car's Bluetooth first.");
-                return;
-            }
-            const goal = drivingGoalInput.value.trim();
-            if (!goal) {
-                showCustomMessage("Please enter a driving goal.");
-                return;
-            }
-
-            sequenceLoading.style.display = 'block';
-            commandSequenceOutput.style.display = 'none';
-            executeSequenceBtn.style.display = 'none';
-            generateSequenceBtn.disabled = true;
-
-            const prompt = `You are a command interpreter for a simple RC car. The car understands these single-character commands: 'f' (move forward one unit), 'b' (move backward one unit), 'l' (turn left slightly), 'r' (turn right slightly), 's' (stop motors).
-Generate a comma-separated sequence of ONLY these commands to achieve the following goal: "${goal}".
-The sequence should be reasonable for a toy car and not excessively long (aim for 5-15 commands if possible).
-Example: For 'go in a small square and stop', you might generate 'f,f,r,f,f,r,f,f,r,f,f,s'.
-Only output the comma-separated command string. Do not include any other text, explanations, or markdown.`;
-
-            const sequenceText = await callGeminiAPI(prompt);
-            
-            sequenceLoading.style.display = 'none';
-            generateSequenceBtn.disabled = false;
-
-            if (sequenceText.startsWith("Error:") || sequenceText.startsWith("Blocked:") || sequenceText.startsWith("Sorry,")) {
-                commandSequenceOutput.textContent = `Error generating sequence: ${sequenceText}`;
-            } else {
-                 // Validate and clean the sequence
-                generatedCommandSequence = sequenceText.split(',')
-                    .map(cmd => cmd.trim())
-                    .filter(cmd => ['f', 'b', 'l', 'r', 's'].includes(cmd));
-                
-                if (generatedCommandSequence.length > 0) {
-                    commandSequenceOutput.textContent = `Generated Sequence: ${generatedCommandSequence.join(', ')}`;
-                    executeSequenceBtn.style.display = 'inline-block';
-                    executeSequenceBtn.disabled = false;
-                } else {
-                    commandSequenceOutput.textContent = "Could not generate a valid command sequence from the response. Please try a different goal.";
-                    generatedCommandSequence = []; // Clear any invalid sequence
-                }
-            }
-            commandSequenceOutput.style.display = 'block';
-        }
-
-        async function executeGeneratedSequence() {
-            if (!isConnected) {
-                showCustomMessage("Not connected to car. Cannot execute sequence.");
-                return;
-            }
-            if (generatedCommandSequence.length === 0) {
-                showCustomMessage("No command sequence generated or sequence is empty.");
-                return;
-            }
-
-            executeSequenceBtn.disabled = true;
-            showCustomMessage(`Executing sequence: ${generatedCommandSequence.join(', ')}...`);
-
-            for (let i = 0; i < generatedCommandSequence.length; i++) {
-                const command = generatedCommandSequence[i];
-                await sendCommand(command);
-                // Add a small delay between commands to allow the car to react
-                // Adjust delay as needed. 500ms for movement, 300ms for turns/stop
-                let delay = (command === 'f' || command === 'b') ? 700 : 400;
-                if (command === 's') delay = 200; 
-                await new Promise(resolve => setTimeout(resolve, delay)); 
-                
-                // Safety stop if Bluetooth disconnects during sequence
-                if (!isConnected) {
-                    showCustomMessage("Bluetooth disconnected during sequence execution. Stopping.");
-                    break;
-                }
-            }
-            showCustomMessage("Sequence execution finished.");
-            executeSequenceBtn.disabled = false;
-        }
-
-        async function getWittyStatus() {
-            if (!isConnected) {
-                showCustomMessage("Please connect to the car's Bluetooth first to get its status.");
-                return;
-            }
-            statusLoading.style.display = 'block';
-            wittyStatusBtn.disabled = true;
-
-            const currentAngleText = document.getElementById('angleValue').textContent;
-            const carAction = lastCommand ? `Last action: '${lastCommand}'` : "Idle"; // Use the last single command
-
-            const prompt = `You are the quirky AI personality of a small, adventurous RC car.
-Given the car's current status: "Action: ${carAction}, Steering Angle: ${currentAngleText}, Bluetooth: Connected",
-generate a short, witty, and fun status update or thought from the car's perspective (max 1-2 sentences).
-Be creative and a little humorous. For example, if idle, it might be dreaming of off-roading. If moving, it's on a grand mission.`;
-
-            const wittyText = await callGeminiAPI(prompt);
-            statusLoading.style.display = 'none';
-            wittyStatusBtn.disabled = false;
-            showCustomMessage(`Car says: "${wittyText}"`);
-        }
-
-
-        // Custom Message Modal (replaces alert)
         function showCustomMessage(message) {
             let modal = document.getElementById('customMessageModal');
             if (!modal) {
@@ -871,59 +795,61 @@ Be creative and a little humorous. For example, if idle, it might be dreaming of
                     position: 'fixed', left: '0', top: '0', width: '100%', height: '100%',
                     backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex',
                     justifyContent: 'center', alignItems: 'center', zIndex: '2000',
-                    opacity: '0', transition: 'opacity 0.3s ease-in-out' // For fade effect
+                    opacity: '0', transition: 'opacity 0.2s ease-in-out' 
                 });
 
                 const modalContent = document.createElement('div');
                  Object.assign(modalContent.style, {
-                    padding: '25px', borderRadius: '12px', textAlign: 'center',
-                    boxShadow: '0 8px 25px rgba(0,0,0,0.3)', maxWidth: '90%',
-                    transform: 'scale(0.9)', transition: 'transform 0.3s ease-in-out' // For pop effect
+                    padding: '20px', borderRadius: '10px', textAlign: 'center', // Adjusted padding
+                    boxShadow: '0 8px 25px rgba(0,0,0,0.3)', width: '85%', maxWidth: '350px', // Max width for modal
+                    transform: 'scale(0.95)', transition: 'transform 0.2s ease-in-out' 
                 });
                 
                 const messageText = document.createElement('p');
                 messageText.id = 'customMessageText';
-                Object.assign(messageText.style, { marginBottom: '20px', fontSize: '1.1em'});
+                Object.assign(messageText.style, { marginBottom: '15px', fontSize: '1em'}); // Adjusted font size
 
                 const closeButton = document.createElement('button');
                 closeButton.textContent = 'OK';
                 closeButton.className = 'btn'; 
+                Object.assign(closeButton.style, {width: 'auto', padding: '10px 25px'}); // Ensure OK button is reasonably sized
+
                 closeButton.onclick = function() { 
                     modal.style.opacity = '0';
-                    modalContent.style.transform = 'scale(0.9)';
-                    setTimeout(() => modal.style.display = 'none', 300);
+                    modalContent.style.transform = 'scale(0.95)';
+                    setTimeout(() => modal.style.display = 'none', 200); 
                 };
 
                 modalContent.appendChild(messageText);
                 modalContent.appendChild(closeButton);
                 modal.appendChild(modalContent);
                 document.body.appendChild(modal);
-                 // Trigger reflow to apply initial transition state
-                void modal.offsetWidth;
+                void modal.offsetWidth; 
             }
             
             document.getElementById('customMessageText').textContent = message;
             modal.style.display = 'flex';
-            // Update modal colors based on current theme for content and button
             const modalContent = modal.querySelector('div'); 
             const closeButton = modal.querySelector('button');
             const isDark = document.body.classList.contains('dark-mode');
             
-            modalContent.style.background = isDark ? '#3a3a3a' : '#f0f0f0'; // Darker grey / Lighter grey
+            modalContent.style.background = isDark ? '#3a3a3a' : '#f0f0f0'; 
             modalContent.style.color = isDark ? '#e8e8e8' : '#222';
-            closeButton.style.background = isDark ? 'linear-gradient(45deg, #007bff, #0056b3)' : 'linear-gradient(45deg, #5cb85c, #4cae4c)'; // Blue for dark, Green for light
+            closeButton.style.background = isDark ? 'linear-gradient(45deg, #007bff, #0056b3)' : 'linear-gradient(45deg, #5cb85c, #4cae4c)'; 
             closeButton.style.color = 'white';
 
-
-            // Animate in
             setTimeout(() => {
                 modal.style.opacity = '1';
                 modalContent.style.transform = 'scale(1)';
             }, 10);
         }
 
-        connectGamepad(); 
-        updateConnectionStatus(); // Initialize button states based on whether BT is connected from a previous session (though Web Bluetooth usually requires fresh connection)
+        if (navigator.getGamepads) {
+            console.log("Gamepad API available. Listeners are global.");
+        } else {
+            console.warn("Gamepad API not available.");
+            if(connectGamepadBtn) connectGamepadBtn.disabled = true;
+        }
     </script>
 </body>
 </html>
