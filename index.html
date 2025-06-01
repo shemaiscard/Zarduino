@@ -398,12 +398,11 @@
                     this.connectBtn.textContent = 'Connecting...';
 
                     this.bluetoothDevice = await navigator.bluetooth.requestDevice({
-                        filters: [
-                            { name: 'HC-06' },
-                            { namePrefix: 'HC-' },
-                            { services: ['0000ffe0-0000-1000-8000-00805f9b34fb'] }
-                        ],
-                        optionalServices: ['0000ffe0-0000-1000-8000-00805f9b34fb']
+                        acceptAllDevices: true,
+                        optionalServices: [
+                            '0000ffe0-0000-1000-8000-00805f9b34fb',
+                            '00001101-0000-1000-8000-00805f9b34fb'
+                        ]
                     });
 
                     const server = await this.bluetoothDevice.gatt.connect();
