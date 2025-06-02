@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arduino Car BLE Controller</title>
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Zarduino" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <title>Arduino Car Controller</title>
     <style>
         * {
             margin: 0;
@@ -211,27 +217,31 @@
             font-weight: 300;
         }
 
-        .speed-buttons {
-            display: flex;
-            justify-content: space-around;
-            gap: 10px;
-        }
-
-        .speed-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
-            color: white;
+        .speed-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right, #ff4757, #ffd93d, #00ff88);
+            outline: none;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 14px;
+            -webkit-appearance: none;
         }
 
-        .speed-btn.active {
-            background: linear-gradient(145deg, #00d4ff, #007acc);
-            box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+        .speed-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .speed-value {
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #00d4ff;
         }
 
         .footer {
@@ -239,17 +249,6 @@
             opacity: 0.6;
             font-size: 12px;
             margin-top: 20px;
-        }
-
-        .error-message {
-            background: rgba(255, 71, 87, 0.1);
-            border: 1px solid rgba(255, 71, 87, 0.3);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            color: #ff4757;
-            text-align: center;
-            display: none;
         }
 
         @media (max-width: 480px) {
@@ -287,17 +286,15 @@
 </head>
 <body>
     <div class="header">
-        <h1>🚗 Arduino Car BLE Remote</h1>
+        <h1>🚗 Arduino Car Remote</h1>
         <div class="connection-status">
             <div class="status-dot" id="statusDot"></div>
             <span id="statusText">Disconnected</span>
         </div>
     </div>
 
-    <div class="error-message" id="errorMessage"></div>
-
     <div class="bluetooth-section">
-        <button class="connect-btn" id="connectBtn">Connect via BLE</button>
+        <button class="connect-btn" id="connectBtn">Connect to Car</button>
     </div>
 
     <div class="controls">
@@ -311,58 +308,35 @@
 
         <div class="speed-control">
             <h3>Speed Control</h3>
-            <div class="speed-buttons">
-                <button class="speed-btn" data-speed="1">Low</button>
-                <button class="speed-btn" data-speed="2">Med</button>
-                <button class="speed-btn active" data-speed="3">High</button>
-            </div>
+            <input type="range" class="speed-slider" min="50" max="255" value="255" id="speedSlider">
+            <div class="speed-value" id="speedValue">100%</div>
         </div>
     </div>
 
     <div class="footer">
-        <p>Compatible with ESP32 BLE Module</p>
-        <p>Make sure to use Chrome browser for BLE support</p>
+        <p>Compatible with HC-06 Bluetooth Module</p>
     </div>
 
     <script>
-        class ArduinoCarBLEController {
+        class ArduinoCarController {
             constructor() {
                 this.bluetoothDevice = null;
                 this.characteristic = null;
                 this.isConnected = false;
-                this.currentSpeed = 3; // High speed by default
-                
-                this.serviceUUID = '12345678-1234-1234-1234-123456789abc';
-                this.characteristicUUID = '87654321-4321-4321-4321-cba987654321';
+                this.currentSpeed = 255;
                 
                 this.initializeElements();
                 this.attachEventListeners();
                 this.updateConnectionStatus();
-                this.checkBLESupport();
             }
 
             initializeElements() {
                 this.connectBtn = document.getElementById('connectBtn');
                 this.statusDot = document.getElementById('statusDot');
                 this.statusText = document.getElementById('statusText');
-                this.errorMessage = document.getElementById('errorMessage');
+                this.speedSlider = document.getElementById('speedSlider');
+                this.speedValue = document.getElementById('speedValue');
                 this.controlBtns = document.querySelectorAll('.control-btn');
-                this.speedBtns = document.querySelectorAll('.speed-btn');
-            }
-
-            checkBLESupport() {
-                if (!navigator.bluetooth) {
-                    this.showError('Bluetooth Low Energy is not supported on this device/browser. Please use Chrome on a device with BLE support.');
-                    this.connectBtn.disabled = true;
-                }
-            }
-
-            showError(message) {
-                this.errorMessage.textContent = message;
-                this.errorMessage.style.display = 'block';
-                setTimeout(() => {
-                    this.errorMessage.style.display = 'none';
-                }, 5000);
             }
 
             attachEventListeners() {
@@ -376,9 +350,7 @@
                     btn.addEventListener('mouseleave', (e) => this.handleControlEnd(e));
                 });
 
-                this.speedBtns.forEach(btn => {
-                    btn.addEventListener('click', (e) => this.setSpeed(e.target.dataset.speed));
-                });
+                this.speedSlider.addEventListener('input', (e) => this.updateSpeed(e.target.value));
 
                 // Prevent scrolling when touching controls
                 document.addEventListener('touchmove', (e) => {
@@ -416,45 +388,40 @@
             }
 
             async connect() {
+                if (!navigator.bluetooth) {
+                    alert('Bluetooth is not supported on this device/browser. Please use Chrome on Android or a desktop with Bluetooth support.');
+                    return;
+                }
+
                 try {
                     this.connectBtn.disabled = true;
                     this.connectBtn.textContent = 'Connecting...';
 
-                    console.log('Requesting Bluetooth device...');
                     this.bluetoothDevice = await navigator.bluetooth.requestDevice({
-                        filters: [
-                            { name: 'Arduino Car Controller' },
-                            { services: [this.serviceUUID] }
-                        ],
-                        optionalServices: [this.serviceUUID]
+                        acceptAllDevices: true,
+                        optionalServices: [
+                            '0000ffe0-0000-1000-8000-00805f9b34fb',
+                            '00001101-0000-1000-8000-00805f9b34fb'
+                        ]
                     });
 
-                    console.log('Connecting to GATT server...');
                     const server = await this.bluetoothDevice.gatt.connect();
-                    
-                    console.log('Getting service...');
-                    const service = await server.getPrimaryService(this.serviceUUID);
-                    
-                    console.log('Getting characteristic...');
-                    this.characteristic = await service.getCharacteristic(this.characteristicUUID);
+                    const service = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
+                    this.characteristic = await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
 
                     this.bluetoothDevice.addEventListener('gattserverdisconnected', () => {
-                        console.log('Device disconnected');
                         this.handleDisconnection();
                     });
 
                     this.isConnected = true;
                     this.updateConnectionStatus();
                     
-                    // Send initial stop command and speed setting
+                    // Send initial stop command
                     await this.sendCommand('s');
-                    await this.sendCommand(this.currentSpeed.toString());
-                    
-                    console.log('Connected successfully!');
                     
                 } catch (error) {
                     console.error('Connection failed:', error);
-                    this.showError(`Failed to connect: ${error.message}`);
+                    alert('Failed to connect to the car. Make sure the HC-06 module is powered on and nearby.');
                 } finally {
                     this.connectBtn.disabled = false;
                 }
@@ -483,7 +450,7 @@
                 } else {
                     this.statusDot.classList.remove('connected');
                     this.statusText.textContent = 'Disconnected';
-                    this.connectBtn.textContent = 'Connect via BLE';
+                    this.connectBtn.textContent = 'Connect to Car';
                 }
             }
 
@@ -496,10 +463,9 @@
                 try {
                     const encoder = new TextEncoder();
                     await this.characteristic.writeValue(encoder.encode(command));
-                    console.log(`Sent command: ${command}`);
+                    console.log(Sent command: ${command});
                 } catch (error) {
                     console.error('Failed to send command:', error);
-                    this.showError('Failed to send command to car');
                 }
             }
 
@@ -526,23 +492,16 @@
                 }
             }
 
-            setSpeed(speed) {
-                this.currentSpeed = parseInt(speed);
-                
-                // Update UI
-                this.speedBtns.forEach(btn => btn.classList.remove('active'));
-                event.target.classList.add('active');
-                
-                // Send speed command to car
-                this.sendCommand(speed);
-                
-                console.log(`Speed set to: ${speed}`);
+            updateSpeed(value) {
+                this.currentSpeed = parseInt(value);
+                const percentage = Math.round((value / 255) * 100);
+                this.speedValue.textContent = ${percentage}%;
             }
         }
 
         // Initialize the controller when the page loads
         document.addEventListener('DOMContentLoaded', () => {
-            new ArduinoCarBLEController();
+            new ArduinoCarController();
         });
 
         // Prevent zoom on double tap
