@@ -1,76 +1,55 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>BLE Car Controller</title>
+  <meta charset="utf-8">
+  <title>ESP32 BLE Car Controller</title>
   <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      margin-top: 40px;
-      background-color: #f0f0f0;
-    }
-
-    button, input[type=range] {
-      margin: 10px;
-      padding: 15px 30px;
-      font-size: 18px;
-    }
-
-    #status {
-      font-weight: bold;
-      margin: 15px;
-    }
+    body { font-family: sans-serif; text-align: center; margin-top: 40px; }
+    button, input[type=range] { margin: 10px; font-size: 16px; padding: 10px; }
   </style>
 </head>
 <body>
   <h1>ESP32 BLE Car Control</h1>
-  <div id="status">Status: <span id="statusText">Disconnected</span></div>
-
-  <button onclick="connect()">🔌 Connect</button>
-  <br><br>
-
-  <button onclick="sendCommand('F')">⬆ Forward</button><br>
-  <button onclick="sendCommand('L')">⬅ Left</button>
-  <button onclick="sendCommand('S')">⏹ Stop</button>
-  <button onclick="sendCommand('R')">➡ Right</button><br>
-  <button onclick="sendCommand('B')">⬇ Backward</button><br>
-
+  <p id="statusText">Disconnected ❌</p>
+  <button onclick="connect()">Connect</button>
+  <br>
+  <button onclick="sendCommand('F')">Forward</button>
+  <button onclick="sendCommand('B')">Backward</button><br>
+  <button onclick="sendCommand('L')">Left</button>
+  <button onclick="sendCommand('R')">Right</button><br>
+  <label>Speed:</label>
+  <input type="range" id="speedSlider" min="0" max="255" onchange="sendSpeed(this.value)">
   <script>
-    let bleDevice = null;
-    let bleServer = null;
-    let bleService = null;
-    let bleTxCharacteristic = null;
-
-    const SERVICE_UUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E";
-    const TX_CHARACTERISTIC_UUID = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"; // RX on ESP32 side
+    const SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+    const TX_CHARACTERISTIC_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
+    let bleDevice, bleServer, bleService, bleTxCharacteristic;
 
     async function connect() {
       try {
         bleDevice = await navigator.bluetooth.requestDevice({
-          filters: [{ name: 'ESP32-CAR' }],
+          acceptAllDevices: true,
           optionalServices: [SERVICE_UUID]
         });
-
         bleServer = await bleDevice.gatt.connect();
         bleService = await bleServer.getPrimaryService(SERVICE_UUID);
         bleTxCharacteristic = await bleService.getCharacteristic(TX_CHARACTERISTIC_UUID);
-
         document.getElementById("statusText").textContent = "Connected ✅";
-
       } catch (error) {
         alert("Connection failed: " + error);
       }
     }
 
-    async function sendCommand(cmd) {
-      if (!bleTxCharacteristic) {
-        alert("Not connected!");
-        return;
+    function sendCommand(cmd) {
+      if (bleTxCharacteristic) {
+        bleTxCharacteristic.writeValue(new TextEncoder().encode(cmd));
       }
+    }
 
-      const encoder = new TextEncoder();
-      await bleTxCharacteristic.writeValue(encoder.encode(cmd));
+    function sendSpeed(value) {
+      if (bleTxCharacteristic) {
+        bleTxCharacteristic.writeValue(new TextEncoder().encode("S" + value));
+      }
     }
   </script>
 </body>
