@@ -23,12 +23,13 @@
             --connect-button-hover-bg: #007bb5;
             --status-color: #555;
             --border-color: #ccc;
+            --footer-text-color: #666;
         }
 
         body.dark-mode {
-            --background-color: #222;
+            --background-color: #000; /* Black background */
             --text-color: #eee;
-            --button-bg: #555;
+            --button-bg: #4CAF50;
             --button-text: #eee;
             --button-hover-bg: #777;
             --stop-button-bg: #880000;
@@ -37,13 +38,14 @@
             --connect-button-hover-bg: #004c66;
             --status-color: #bbb;
             --border-color: #444;
+            --footer-text-color: #999;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
-            margin: 0;
-            padding: 20px;
+            margin: auto;
+            padding: 10px 10px 10px 10px; /* Add padding for footer */
             background-color: var(--background-color);
             color: var(--text-color);
             transition: background-color 0.3s, color 0.3s;
@@ -51,11 +53,12 @@
             flex-direction: column;
             min-height: 100vh;
             justify-content: center;
+            position: relative; /* For footer positioning */
         }
 
         h1 {
             color: var(--text-color);
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .control-panel {
@@ -64,12 +67,12 @@
             grid-template-rows: repeat(3, auto);
             gap: 10px;
             margin: 20px auto;
-            max-width: 320px; /* Adjusted for mobile grid */
-            width: 90%; /* Responsive width */
+            max-width: 320px;
+            width: 90%;
         }
 
         .control-panel button {
-            width: 100%; /* Fill grid cell */
+            width: 100%;
             padding: 20px 0;
             font-size: 24px;
             border: none;
@@ -79,6 +82,7 @@
             color: var(--button-text);
             background-color: var(--button-bg);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            -webkit-tap-highlight-color: transparent; /* Prevent blue highlight on tap */
         }
 
         /* Grid placement for buttons */
@@ -101,7 +105,7 @@
         }
 
         #status {
-            margin-top: 30px;
+            margin-top: 25px;
             padding: 15px;
             font-size: 1.1em;
             color: var(--status-color);
@@ -116,7 +120,7 @@
         #connectBtn {
             width: 250px;
             height: 60px;
-            margin-top: 30px;
+            margin: 30px auto; /* Centered with auto margins */
             font-size: 1.2em;
             background-color: var(--connect-button-bg);
             color: var(--button-text);
@@ -125,6 +129,8 @@
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: block; /* Ensures auto margins work */
+            -webkit-tap-highlight-color: transparent;
         }
 
         #connectBtn:hover {
@@ -198,11 +204,22 @@
             transform: translateX(26px);
         }
 
+        .footer {
+            position: absolute;
+            bottom: auto;
+            left: 0;
+            width: 100%;
+            padding: auto;
+            font-size: 1.2em;
+            color: #4CAF50 ;
+            background-color: transparent; 
+        }
+
         /* For smaller screens, adjust font sizes and button sizes if needed */
         @media (max-width: 400px) {
             .control-panel button {
                 font-size: 20px;
-                padding: 15px 0;
+                padding: 10px 0;
             }
             h1 {
                 font-size: 1.8em;
@@ -215,7 +232,8 @@
         }
     </style>
 </head>
-<body class="dark-mode"> <h1>Arduino Car BLE Controller</h1>
+<body class="dark-mode">
+    <h1>Arduino Car BLE Controller</h1>
     
     <div class="control-panel">
         <button id="forwardBtn" ontouchstart="sendCommand('f')" ontouchend="sendCommand('s')" 
@@ -240,6 +258,10 @@
         </label>
         <span>Dark Mode</span>
     </div>
+
+    <footer class="footer">
+        <p>Made by Giscard</p>
+    </footer>
 
     <script>
         let characteristic;
