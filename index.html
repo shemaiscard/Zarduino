@@ -1,518 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <meta name="apple-mobile-web-app-title" content="Zarduino" />
-    <link rel="manifest" href="/site.webmanifest" />
-    <title>Arduino Car Controller</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-touch-callout: none;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
-            color: #ffffff;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 20px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .header h1 {
-            font-size: 28px;
-            font-weight: 300;
-            color: #00d4ff;
-            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
-            margin-bottom: 10px;
-        }
-
-        .connection-status {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-size: 14px;
-            opacity: 0.8;
-        }
-
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #ff4444;
-            box-shadow: 0 0 10px rgba(255, 68, 68, 0.7);
-            animation: pulse 2s infinite;
-        }
-
-        .status-dot.connected {
-            background: #00ff88;
-            box-shadow: 0 0 10px rgba(0, 255, 136, 0.7);
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .bluetooth-section {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(10px);
-        }
-
-        .connect-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(45deg, #007acc, #00d4ff);
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
-        }
-
-        .connect-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
-        }
-
-        .connect-btn:disabled {
-            background: rgba(255, 255, 255, 0.1);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .controls {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .direction-pad {
-            display: grid;
-            grid-template-areas: 
-                ". up ."
-                "left stop right"
-                ". down .";
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .control-btn {
-            width: 80px;
-            height: 80px;
-            border: none;
-            border-radius: 15px;
-            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
-            color: #ffffff;
-            font-size: 24px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 
-                0 8px 16px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .control-btn:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .control-btn:active:before {
-            left: 100%;
-        }
-
-        .control-btn:active {
-            transform: scale(0.95);
-            box-shadow: 
-                0 4px 8px rgba(0, 0, 0, 0.4),
-                inset 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .control-btn.forward {
-            grid-area: up;
-            background: linear-gradient(145deg, #00ff88, #00cc6a);
-            box-shadow: 0 8px 16px rgba(0, 255, 136, 0.3);
-        }
-
-        .control-btn.backward {
-            grid-area: down;
-            background: linear-gradient(145deg, #ff6b6b, #cc5555);
-            box-shadow: 0 8px 16px rgba(255, 107, 107, 0.3);
-        }
-
-        .control-btn.left {
-            grid-area: left;
-            background: linear-gradient(145deg, #ffd93d, #ccad31);
-            box-shadow: 0 8px 16px rgba(255, 217, 61, 0.3);
-        }
-
-        .control-btn.right {
-            grid-area: right;
-            background: linear-gradient(145deg, #ffd93d, #ccad31);
-            box-shadow: 0 8px 16px rgba(255, 217, 61, 0.3);
-        }
-
-        .control-btn.stop {
-            grid-area: stop;
-            background: linear-gradient(145deg, #ff4757, #cc3a47);
-            box-shadow: 0 8px 16px rgba(255, 71, 87, 0.3);
-            font-size: 20px;
-        }
-
-        .speed-control {
-            width: 100%;
-            max-width: 300px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-        }
-
-        .speed-control h3 {
-            margin-bottom: 15px;
-            color: #00d4ff;
-            font-weight: 300;
-        }
-
-        .speed-slider {
-            width: 100%;
-            height: 8px;
-            border-radius: 4px;
-            background: linear-gradient(to right, #ff4757, #ffd93d, #00ff88);
-            outline: none;
-            cursor: pointer;
-            -webkit-appearance: none;
-        }
-
-        .speed-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: #ffffff;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        }
-
-        .speed-value {
-            margin-top: 10px;
-            font-size: 18px;
-            font-weight: 600;
-            color: #00d4ff;
-        }
-
-        .footer {
-            text-align: center;
-            opacity: 0.6;
-            font-size: 12px;
-            margin-top: 20px;
-        }
-
-        @media (max-width: 480px) {
-            .control-btn {
-                width: 70px;
-                height: 70px;
-                font-size: 20px;
-            }
-            
-            .direction-pad {
-                gap: 10px;
-            }
-            
-            .header h1 {
-                font-size: 24px;
-            }
-        }
-
-        .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            pointer-events: none;
-            transform: scale(0);
-            animation: ripple-animation 0.6s linear;
-        }
-
-        @keyframes ripple-animation {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>BLE Car Control</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background: #f9f9f9;
+      padding: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    button {
+      font-size: 18px;
+      margin: 10px;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 8px;
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    #controls {
+      margin-top: 20px;
+    }
+    #speedControl {
+      width: 80%;
+      margin: 20px auto;
+    }
+    #status {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🚗 Arduino Car Remote</h1>
-        <div class="connection-status">
-            <div class="status-dot" id="statusDot"></div>
-            <span id="statusText">Disconnected</span>
-        </div>
-    </div>
+  <h1>ESP32 BLE Car Controller</h1>
+  
+  <div id="controls">
+    <button onclick="sendCommand('F')">Forward</button><br>
+    <button onclick="sendCommand('L')">Left</button>
+    <button onclick="sendCommand('S')">Stop</button>
+    <button onclick="sendCommand('R')">Right</button><br>
+    <button onclick="sendCommand('B')">Backward</button>
+  </div>
 
-    <div class="bluetooth-section">
-        <button class="connect-btn" id="connectBtn">Connect to Car</button>
-    </div>
+  <div>
+    <label for="speedControl"><strong>Speed Control</strong></label><br>
+    <input type="range" id="speedControl" min="0" max="9" value="5" oninput="sendSpeed(this.value)">
+  </div>
 
-    <div class="controls">
-        <div class="direction-pad">
-            <button class="control-btn forward" data-command="f">↑</button>
-            <button class="control-btn left" data-command="l">←</button>
-            <button class="control-btn stop" data-command="s">STOP</button>
-            <button class="control-btn right" data-command="r">→</button>
-            <button class="control-btn backward" data-command="b">↓</button>
-        </div>
+  <div>
+    <button onclick="connectBLE()">🔌 Connect to Car</button>
+  </div>
 
-        <div class="speed-control">
-            <h3>Speed Control</h3>
-            <input type="range" class="speed-slider" min="50" max="255" value="255" id="speedSlider">
-            <div class="speed-value" id="speedValue">100%</div>
-        </div>
-    </div>
+  <p id="status">Status: Not Connected</p>
 
-    <div class="footer">
-        <p>Compatible with HC-06 Bluetooth Module</p>
-    </div>
+  <script>
+    let bleDevice = null;
+    let bleCharacteristic = null;
 
-    <script>
-        class ArduinoCarController {
-            constructor() {
-                this.bluetoothDevice = null;
-                this.characteristic = null;
-                this.isConnected = false;
-                this.currentSpeed = 255;
-                
-                this.initializeElements();
-                this.attachEventListeners();
-                this.updateConnectionStatus();
-            }
-
-            initializeElements() {
-                this.connectBtn = document.getElementById('connectBtn');
-                this.statusDot = document.getElementById('statusDot');
-                this.statusText = document.getElementById('statusText');
-                this.speedSlider = document.getElementById('speedSlider');
-                this.speedValue = document.getElementById('speedValue');
-                this.controlBtns = document.querySelectorAll('.control-btn');
-            }
-
-            attachEventListeners() {
-                this.connectBtn.addEventListener('click', () => this.toggleConnection());
-                
-                this.controlBtns.forEach(btn => {
-                    btn.addEventListener('touchstart', (e) => this.handleControlStart(e), { passive: false });
-                    btn.addEventListener('touchend', (e) => this.handleControlEnd(e), { passive: false });
-                    btn.addEventListener('mousedown', (e) => this.handleControlStart(e));
-                    btn.addEventListener('mouseup', (e) => this.handleControlEnd(e));
-                    btn.addEventListener('mouseleave', (e) => this.handleControlEnd(e));
-                });
-
-                this.speedSlider.addEventListener('input', (e) => this.updateSpeed(e.target.value));
-
-                // Prevent scrolling when touching controls
-                document.addEventListener('touchmove', (e) => {
-                    if (e.target.classList.contains('control-btn')) {
-                        e.preventDefault();
-                    }
-                }, { passive: false });
-            }
-
-            createRipple(event, element) {
-                const ripple = document.createElement('span');
-                const rect = element.getBoundingClientRect();
-                const size = Math.max(rect.width, rect.height);
-                const x = (event.clientX || event.touches[0].clientX) - rect.left - size / 2;
-                const y = (event.clientY || event.touches[0].clientY) - rect.top - size / 2;
-                
-                ripple.style.width = ripple.style.height = size + 'px';
-                ripple.style.left = x + 'px';
-                ripple.style.top = y + 'px';
-                ripple.classList.add('ripple');
-                
-                element.appendChild(ripple);
-                
-                setTimeout(() => {
-                    ripple.remove();
-                }, 600);
-            }
-
-            async toggleConnection() {
-                if (this.isConnected) {
-                    await this.disconnect();
-                } else {
-                    await this.connect();
-                }
-            }
-
-            async connect() {
-                if (!navigator.bluetooth) {
-                    alert('Bluetooth is not supported on this device/browser. Please use Chrome on Android or a desktop with Bluetooth support.');
-                    return;
-                }
-
-                try {
-                    this.connectBtn.disabled = true;
-                    this.connectBtn.textContent = 'Connecting...';
-
-                    this.bluetoothDevice = await navigator.bluetooth.requestDevice({
-                        acceptAllDevices: true,
-                        optionalServices: [
-                            '0000ffe0-0000-1000-8000-00805f9b34fb',
-                            '00001101-0000-1000-8000-00805f9b34fb'
-                        ]
-                    });
-
-                    const server = await this.bluetoothDevice.gatt.connect();
-                    const service = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
-                    this.characteristic = await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
-
-                    this.bluetoothDevice.addEventListener('gattserverdisconnected', () => {
-                        this.handleDisconnection();
-                    });
-
-                    this.isConnected = true;
-                    this.updateConnectionStatus();
-                    
-                    // Send initial stop command
-                    await this.sendCommand('s');
-                    
-                } catch (error) {
-                    console.error('Connection failed:', error);
-                    alert('Failed to connect to the car. Make sure the HC-06 module is powered on and nearby.');
-                } finally {
-                    this.connectBtn.disabled = false;
-                }
-            }
-
-            async disconnect() {
-                if (this.bluetoothDevice && this.bluetoothDevice.gatt.connected) {
-                    await this.sendCommand('s'); // Stop the car before disconnecting
-                    this.bluetoothDevice.gatt.disconnect();
-                }
-                this.handleDisconnection();
-            }
-
-            handleDisconnection() {
-                this.isConnected = false;
-                this.bluetoothDevice = null;
-                this.characteristic = null;
-                this.updateConnectionStatus();
-            }
-
-            updateConnectionStatus() {
-                if (this.isConnected) {
-                    this.statusDot.classList.add('connected');
-                    this.statusText.textContent = 'Connected';
-                    this.connectBtn.textContent = 'Disconnect';
-                } else {
-                    this.statusDot.classList.remove('connected');
-                    this.statusText.textContent = 'Disconnected';
-                    this.connectBtn.textContent = 'Connect to Car';
-                }
-            }
-
-            async sendCommand(command) {
-                if (!this.isConnected || !this.characteristic) {
-                    console.warn('Not connected to device');
-                    return;
-                }
-
-                try {
-                    const encoder = new TextEncoder();
-                    await this.characteristic.writeValue(encoder.encode(command));
-                    console.log(Sent command: ${command});
-                } catch (error) {
-                    console.error('Failed to send command:', error);
-                }
-            }
-
-            handleControlStart(event) {
-                event.preventDefault();
-                const btn = event.currentTarget;
-                const command = btn.dataset.command;
-                
-                this.createRipple(event, btn);
-                
-                if (command) {
-                    this.sendCommand(command);
-                }
-            }
-
-            handleControlEnd(event) {
-                event.preventDefault();
-                const btn = event.currentTarget;
-                const command = btn.dataset.command;
-                
-                // For directional controls, send stop command when released
-                if (command && ['f', 'b', 'l', 'r'].includes(command)) {
-                    setTimeout(() => this.sendCommand('s'), 50);
-                }
-            }
-
-            updateSpeed(value) {
-                this.currentSpeed = parseInt(value);
-                const percentage = Math.round((value / 255) * 100);
-                this.speedValue.textContent = ${percentage}%;
-            }
-        }
-
-        // Initialize the controller when the page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            new ArduinoCarController();
+    async function connectBLE() {
+      try {
+        bleDevice = await navigator.bluetooth.requestDevice({
+          filters: [{ name: 'ESP32-CAR' }],
+          optionalServices: ['6e400001-b5a3-f393-e0a9-e50e24dcca9e']
         });
 
-        // Prevent zoom on double tap
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', function (event) {
-            const now = (new Date()).getTime();
-            if (now - lastTouchEnd <= 300) {
-                event.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, false);
-    </script>
+        const server = await bleDevice.gatt.connect();
+        const service = await server.getPrimaryService('6e400001-b5a3-f393-e0a9-e50e24dcca9e');
+        bleCharacteristic = await service.getCharacteristic('6e400002-b5a3-f393-e0a9-e50e24dcca9e');
+
+        document.getElementById("status").innerText = "Status: Connected ✅";
+      } catch (error) {
+        console.error(error);
+        document.getElementById("status").innerText = "Status: Connection Failed ❌";
+      }
+    }
+
+    function sendCommand(cmd) {
+      if (!bleCharacteristic) {
+        alert("Please connect to the car first.");
+        return;
+      }
+      const value = new TextEncoder().encode(cmd);
+      bleCharacteristic.writeValue(value);
+    }
+
+    function sendSpeed(val) {
+      sendCommand('V' + val); // e.g., V5
+    }
+  </script>
 </body>
 </html>
