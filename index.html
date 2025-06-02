@@ -23,7 +23,7 @@
         body.dark-mode {
             --background-color: #000; /* Black background */
             --text-color: #eee;
-            --button-bg: #555;
+            --button-bg: #4CAF50;
             --button-text: #eee;
             --button-hover-bg: #777;
             --stop-button-bg: #880000;
@@ -38,8 +38,8 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
-            margin: 0;
-            padding: 20px 20px 60px 20px; /* Add padding for footer */
+            margin: auto;
+            padding: 20px 20px 20px 20px; /* Add padding for footer */
             background-color: var(--background-color);
             color: var(--text-color);
             transition: background-color 0.3s, color 0.3s;
@@ -52,7 +52,7 @@
 
         h1 {
             color: var(--text-color);
-            margin-bottom: 30px;
+            margin-bottom: 15px;
         }
 
         .control-panel {
@@ -203,17 +203,17 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            padding: 10px 0;
-            font-size: 0.9em;
+            padding: auto;
+            font-size: 1.2em;
             color: var(--footer-text-color);
-            background-color: transparent; /* Adjust if you want a solid footer background */
+            background-color: transparent; 
         }
 
         /* For smaller screens, adjust font sizes and button sizes if needed */
         @media (max-width: 400px) {
             .control-panel button {
                 font-size: 20px;
-                padding: 15px 0;
+                padding: 10px 0;
             }
             h1 {
                 font-size: 1.8em;
