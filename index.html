@@ -1,458 +1,80 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ESP32 BLE Car Controller</title>
-  <style>
-    body { 
-      font-family: sans-serif; 
-      text-align: center; 
-      margin: 0;
-      padding: 20px;
-      background-color: #f5f5f5;
-    }
-    
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      background-color: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    
-    h1 {
-      color: #333;
-      margin-bottom: 20px;
-    }
-    
-    button, input[type=range] { 
-      margin: 10px; 
-      font-size: 16px; 
-      padding: 10px 15px;
-      border-radius: 5px;
-      border: 1px solid #ddd;
-      background-color: #f8f8f8;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    button:hover {
-      background-color: #e8e8e8;
-    }
-    
-    #connectButton {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-    }
-    
-    #disconnectButton {
-      background-color: #f44336;
-      color: white;
-      border: none;
-    }
-    
-    .control-buttons { 
-      margin: 20px 0; 
-      padding: 15px;
-      background-color: #f9f9f9;
-      border-radius: 8px;
-    }
-    
-    .speed-control {
-      margin: 20px 0;
-      padding: 15px;
-    }
-    
-    #statusText { 
-      font-weight: bold; 
-      font-size: 18px;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-    }
-    
-    #debugInfo { 
-      background-color: #f8f8f8; 
-      border: 1px solid #ddd; 
-      padding: 10px; 
-      margin: 15px auto; 
-      max-width: 600px; 
-      text-align: left;
-      display: none;
-      height: 150px;
-      overflow-y: auto;
-      font-family: monospace;
-      font-size: 14px;
-    }
-    
-    .error { color: #d32f2f; }
-    .success { color: #388e3c; }
-    .warning { color: #f57c00; }
-    
-    .info-box {
-      background-color: #e9f7fe;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      padding: 15px;
-      margin: 15px auto;
-      max-width: 600px;
-      text-align: left;
-    }
-    
-    .disabled {
-      opacity: 0.5;
-      cursor: not-allowed !important;
-    }
-    
-    #directionalControls {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      grid-template-rows: 1fr 1fr 1fr;
-      gap: 5px;
-      width: 300px;
-      margin: 0 auto;
-    }
-    
-    #forwardBtn { grid-area: 1 / 2 / 2 / 3; }
-    #leftBtn { grid-area: 2 / 1 / 3 / 2; }
-    #stopBtn { grid-area: 2 / 2 / 3 / 3; background-color: #ff9800; color: white; }
-    #rightBtn { grid-area: 2 / 3 / 3 / 4; }
-    #backwardBtn { grid-area: 3 / 2 / 4 / 3; }
-    
-    .speed-control input[type=range] {
-      width: 80%;
-      max-width: 400px;
-    }
-    
-    #speedValue {
-      display: inline-block;
-      width: 40px;
-      font-weight: bold;
-    }
-    
-    .debug-toggle {
-      margin-top: 20px;
-      font-size: 14px;
-      color: #666;
-      cursor: pointer;
-    }
-    
-    /* For mobile devices */
-    @media (max-width: 600px) {
-      button {
-        font-size: 14px;
-        padding: 8px 12px;
-      }
-      
-      #directionalControls {
-        width: 250px;
-      }
-      
-      .speed-control input[type=range] {
-        width: 90%;
-      }
-    }
-  </style>
+    <title>Arduino Car BLE Controller</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        .control-panel { margin: 20px auto; max-width: 300px; }
+        button { 
+            width: 80px; height: 80px; margin: 5px; 
+            font-size: 20px; border-radius: 10px;
+        }
+        #status { margin-top: 20px; padding: 10px; }
+        #connectBtn { width: 200px; height: 50px; margin-top: 20px; }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>ESP32 BLE Car Control</h1>
-    <p id="statusText">Disconnected ❌</p>
+    <h1>Arduino Car BLE Controller</h1>
     
-    <div>
-      <button id="connectButton" onclick="connect()">Connect</button>
-      <button id="disconnectButton" onclick="disconnect()" style="display: none;">Disconnect</button>
+    <div class="control-panel">
+        <button id="forwardBtn" ontouchstart="sendCommand('f')" ontouchend="sendCommand('s')" 
+                onmousedown="sendCommand('f')" onmouseup="sendCommand('s')">↑</button><br>
+        <button id="leftBtn" ontouchstart="sendCommand('l')" ontouchend="sendCommand('s')" 
+                onmousedown="sendCommand('l')" onmouseup="sendCommand('s')">←</button>
+        <button id="stopBtn" onclick="sendCommand('s')">STOP</button>
+        <button id="rightBtn" ontouchstart="sendCommand('r')" ontouchend="sendCommand('s')" 
+                onmousedown="sendCommand('r')" onmouseup="sendCommand('s')">→</button><br>
+        <button id="backBtn" ontouchstart="sendCommand('b')" ontouchend="sendCommand('s')" 
+                onmousedown="sendCommand('b')" onmouseup="sendCommand('s')">↓</button>
     </div>
     
-    <div class="control-buttons">
-      <h3>Controls</h3>
-      
-      <div id="directionalControls">
-        <button id="forwardBtn" onclick="sendCommand('F')" disabled>Forward</button>
-        <button id="leftBtn" onclick="sendCommand('L')" disabled>Left</button>
-        <button id="stopBtn" onclick="sendCommand('S')" disabled>Stop</button>
-        <button id="rightBtn" onclick="sendCommand('R')" disabled>Right</button>
-        <button id="backwardBtn" onclick="sendCommand('B')" disabled>Backward</button>
-      </div>
-    </div>
-    
-    <div class="speed-control">
-      <label>Speed: <span id="speedValue">128</span></label><br>
-      <input type="range" id="speedSlider" min="0" max="255" value="128" oninput="updateSpeedValue(this.value)" onchange="sendSpeed(this.value)" disabled>
-    </div>
-    
-    <div class="debug-toggle" onclick="toggleDebug()">Show/Hide Debug Info</div>
-    <div id="debugInfo"></div>
-    
-    <div class="info-box">
-      <h3>Browser Compatibility Info:</h3>
-      <p>Web Bluetooth API is supported in Chrome, Edge, and Opera. Not supported in Firefox, Safari, or Internet Explorer.</p>
-      <p>For this app to work:</p>
-      <ul>
-        <li>Use Chrome, Edge, or Opera</li>
-        <li>Access via HTTPS or localhost</li>
-        <li>Bluetooth must be enabled on your device</li>
-        <li>Your device must support Bluetooth</li>
-      </ul>
-    </div>
-  </div>
+    <button id="connectBtn" onclick="connect()">Connect to BLE</button>
+    <div id="status">Status: Disconnected</div>
 
-  <script>
-    // BLE UUIDs - Correct ones from the ESP32 code
-    const SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
-    const RX_CHARACTERISTIC_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
-    const TX_CHARACTERISTIC_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
-    
-    // Global variables
-    let bleDevice, bleServer, bleService, bleTxCharacteristic, bleRxCharacteristic;
-    let isConnected = false;
-    
-    // Debug logging function
-    function log(message, type = 'info') {
-      const debugInfo = document.getElementById('debugInfo');
-      const logEntry = document.createElement('div');
-      logEntry.className = type;
-      logEntry.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
-      debugInfo.appendChild(logEntry);
-      debugInfo.scrollTop = debugInfo.scrollHeight; // Auto-scroll to bottom
-      console.log(message);
-      
-      // Limit number of messages
-      if (debugInfo.children.length > 50) {
-        debugInfo.removeChild(debugInfo.firstChild);
-      }
-    }
-    
-    // Toggle debug info display
-    function toggleDebug() {
-      const debugInfo = document.getElementById('debugInfo');
-      if (debugInfo.style.display === 'none' || debugInfo.style.display === '') {
-        debugInfo.style.display = 'block';
-      } else {
-        debugInfo.style.display = 'none';
-      }
-    }
-    
-    // Update speed value display
-    function updateSpeedValue(value) {
-      document.getElementById('speedValue').textContent = value;
-    }
-    
-    // Check environment on page load
-    window.addEventListener('DOMContentLoaded', function() {
-      // Initialize speed slider
-      const speedSlider = document.getElementById('speedSlider');
-      speedSlider.value = "128";  // Set default speed to middle value
-      document.getElementById('speedValue').textContent = speedSlider.value;
-      
-      checkEnvironment();
-      log('Application initialized', 'info');
-    });
-    
-    // Check if the environment supports Web Bluetooth
-    function checkEnvironment() {
-      // Check if we're in a secure context
-      if (!window.isSecureContext) {
-        log('Web Bluetooth requires a secure context (HTTPS or localhost)', 'error');
-        document.getElementById('connectButton').disabled = true;
-        document.getElementById('statusText').innerHTML = 'Error: Not in secure context ❌';
-        return false;
-      }
-      
-      // Check if Web Bluetooth API is available
-      if (!navigator.bluetooth) {
-        log('Web Bluetooth API is not available in this browser', 'error');
-        document.getElementById('connectButton').disabled = true;
-        document.getElementById('statusText').innerHTML = 'Error: Web Bluetooth not supported ❌';
-        return false;
-      }
-      
-      log('Environment check passed. You can connect to BLE devices.', 'success');
-      return true;
-    }
-    
-    // Connect to BLE device
-    async function connect() {
-      if (!checkEnvironment()) return;
-      
-      document.getElementById('statusText').textContent = 'Connecting...';
-      log('Attempting to connect to BLE device...');
-      
-      try {
-        bleDevice = await navigator.bluetooth.requestDevice({
-          filters: [
-            { namePrefix: 'ESP32' } // Filter for ESP32 devices
-          ],
-          optionalServices: [SERVICE_UUID]
-        });
+    <script>
+        let characteristic;
+        const serviceUuid = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
+        const characteristicUuid = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
         
-        log(`Device selected: ${bleDevice.name}`, 'success');
-        
-        // Add event listener for disconnection
-        bleDevice.addEventListener('gattserverdisconnected', onDisconnected);
-        
-        bleServer = await bleDevice.gatt.connect();
-        log('Connected to GATT server, getting service...');
-        
-        bleService = await bleServer.getPrimaryService(SERVICE_UUID);
-        log('Service found, getting characteristics...');
-        
-        // Get the write characteristic
-        bleTxCharacteristic = await bleService.getCharacteristic(RX_CHARACTERISTIC_UUID);
-        log('Write characteristic found...');
-        
-        // Get the notification characteristic
-        bleRxCharacteristic = await bleService.getCharacteristic(TX_CHARACTERISTIC_UUID);
-        log('Notification characteristic found...');
-        
-        // Enable notifications if needed
-        await bleRxCharacteristic.startNotifications();
-        bleRxCharacteristic.addEventListener('characteristicvaluechanged', handleNotifications);
-        log('Notifications enabled');
-        
-        log('Connection complete!', 'success');
-        
-        // Update UI
-        document.getElementById('statusText').innerHTML = `Connected ✅ to ${bleDevice.name}`;
-        document.getElementById('connectButton').style.display = 'none';
-        document.getElementById('disconnectButton').style.display = 'inline-block';
-        
-        // Enable control buttons
-        setControlsEnabled(true);
-        isConnected = true;
-        
-      } catch (error) {
-        handleConnectionError(error);
-      }
-    }
-    
-    // Handle notifications from the device
-    function handleNotifications(event) {
-      const value = event.target.value;
-      const decoder = new TextDecoder('utf-8');
-      const data = decoder.decode(value);
-      log(`Received from device: ${data}`, 'info');
-    }
-    
-    // Handle connection errors
-    function handleConnectionError(error) {
-      isConnected = false;
-      let errorMessage = "Connection failed: " + error;
-      
-      // Provide more specific error messages
-      if (error.name === 'NotFoundError') {
-        errorMessage = "Device not found. Make sure your ESP32 is powered on and in range.";
-      } else if (error.name === 'SecurityError') {
-        errorMessage = "Security error. Make sure you're using a supported browser with Bluetooth permissions.";
-      } else if (error.name === 'NotSupportedError') {
-        errorMessage = "Web Bluetooth not supported by this browser.";
-      } else if (error.message && error.message.includes('User cancelled')) {
-        errorMessage = "Connection cancelled by user.";
-      }
-      
-      log(errorMessage, 'error');
-      document.getElementById('statusText').textContent = 'Disconnected ❌';
-      setControlsEnabled(false);
-    }
-    
-    // Handle disconnection events
-    function onDisconnected(event) {
-      log('Bluetooth device disconnected', 'warning');
-      isConnected = false;
-      document.getElementById('statusText').textContent = 'Disconnected ❌';
-      document.getElementById('connectButton').style.display = 'inline-block';
-      document.getElementById('disconnectButton').style.display = 'none';
-      setControlsEnabled(false);
-    }
-    
-    // Manually disconnect from device
-    function disconnect() {
-      if (bleDevice && bleDevice.gatt.connected) {
-        bleDevice.gatt.disconnect();
-        log('Manually disconnected from device');
-      } else {
-        log('Already disconnected');
-        onDisconnected();
-      }
-    }
-    
-    // Enable/disable control buttons
-    function setControlsEnabled(enabled) {
-      const controlButtons = ['forwardBtn', 'backwardBtn', 'leftBtn', 'rightBtn', 'stopBtn', 'speedSlider'];
-      controlButtons.forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-          element.disabled = !enabled;
-          if (enabled) {
-            element.classList.remove('disabled');
-          } else {
-            element.classList.add('disabled');
-          }
-        } else {
-          log(`Warning: Element with ID ${id} not found`, 'warning');
+        async function connect() {
+            try {
+                const device = await navigator.bluetooth.requestDevice({
+                    filters: [{ name: "Arduino-BLE-Bridge" }],
+                    optionalServices: [serviceUuid]
+                });
+                
+                const server = await device.gatt.connect();
+                const service = await server.getPrimaryService(serviceUuid);
+                characteristic = await service.getCharacteristic(characteristicUuid);
+                
+                document.getElementById('status').textContent = "Status: Connected";
+                document.getElementById('connectBtn').textContent = "Connected";
+                document.getElementById('connectBtn').disabled = true;
+                
+                device.addEventListener('gattserverdisconnected', () => {
+                    document.getElementById('status').textContent = "Status: Disconnected";
+                    document.getElementById('connectBtn').textContent = "Connect to BLE";
+                    document.getElementById('connectBtn').disabled = false;
+                });
+            } catch (error) {
+                console.error(error);
+                document.getElementById('status').textContent = "Status: Connection failed";
+            }
         }
-      });
-    }
-    
-    // Send command to the device
-    function sendCommand(cmd) {
-      if (!isConnected) {
-        log('Cannot send command: not connected', 'warning');
-        return;
-      }
-      
-      if (bleTxCharacteristic) {
-        try {
-          bleTxCharacteristic.writeValue(new TextEncoder().encode(cmd));
-          log(`Command sent: ${cmd}`);
-          
-          // Show visual feedback
-          const btnMap = {
-            'F': 'forwardBtn',
-            'B': 'backwardBtn',
-            'L': 'leftBtn',
-            'R': 'rightBtn',
-            'S': 'stopBtn'
-          };
-          
-          if (btnMap[cmd]) {
-            const btn = document.getElementById(btnMap[cmd]);
-            btn.style.backgroundColor = '#4CAF50';
-            setTimeout(() => {
-              btn.style.backgroundColor = '';
-            }, 200);
-          }
-          
-        } catch (error) {
-          log(`Error sending command: ${error}`, 'error');
+        
+        function sendCommand(command) {
+            if (!characteristic) {
+                alert("Not connected to BLE!");
+                return;
+            }
+            
+            const buffer = new Uint8Array([command.charCodeAt(0)]);
+            characteristic.writeValue(buffer)
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('status').textContent = "Status: Error sending command";
+                });
         }
-      } else {
-        log('Characteristic not available', 'error');
-      }
-    }
-    
-    // Send speed to the device
-    function sendSpeed(value) {
-      if (!isConnected) {
-        log('Cannot send speed: not connected', 'warning');
-        return;
-      }
-      
-      if (bleTxCharacteristic) {
-        try {
-          const speedCommand = "S" + value.toString().padStart(3, '0');  // Ensure 3 digits
-          bleTxCharacteristic.writeValue(new TextEncoder().encode(speedCommand));
-          log(`Speed set to: ${value} (command: ${speedCommand})`);
-        } catch (error) {
-          log(`Error setting speed: ${error}`, 'error');
-        }
-      } else {
-        log('Characteristic not available', 'error');
-      }
-    }
-  </script>
+    </script>
 </body>
 </html>
