@@ -38,43 +38,48 @@
             --connect-button-hover-bg: #004c66;
             --status-color: #bbb;
             --border-color: #444;
-            --footer-text-color: #999;
+            --footer-text-color: #4CAF50;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
-            margin: auto;
-            padding: 10px 10px 10px 10px; /* Add padding for footer */
+            margin: 0;
+            padding: 20px 20px 60px 20px;
             background-color: var(--background-color);
             color: var(--text-color);
             transition: background-color 0.3s, color 0.3s;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
-            justify-content: center;
-            position: relative; /* For footer positioning */
+            min-height: 100vh; /* Set minimum height to 100% of viewport height */
+            height: 100vh; /* Explicitly set height to 100% of viewport height */
+            justify-content: space-between; /* Distribute space to fit content */
+            position: relative;
+            overflow: hidden; /* Hide overflow to prevent scrolling */
+            box-sizing: border-box; /* Include padding in element's total width and height */
         }
 
         h1 {
             color: var(--text-color);
-            margin-bottom: 20px;
+            margin-bottom: 20px; /* Reduced margin to save space */
+            font-size: 1.8em; /* Adjusted for smaller screens */
         }
 
         .control-panel {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(3, auto);
-            gap: 10px;
-            margin: 20px auto;
-            max-width: 320px;
+            gap: 8px; /* Reduced gap */
+            margin: 10px auto; /* Reduced margin */
+            max-width: 300px; /* Slightly reduced max-width */
             width: 90%;
+            flex-shrink: 0; /* Prevent shrinking */
         }
 
         .control-panel button {
             width: 100%;
-            padding: 20px 0;
-            font-size: 24px;
+            padding: 15px 0; /* Reduced padding */
+            font-size: 20px; /* Reduced font size */
             border: none;
             border-radius: 15px;
             cursor: pointer;
@@ -82,7 +87,7 @@
             color: var(--button-text);
             background-color: var(--button-bg);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            -webkit-tap-highlight-color: transparent; /* Prevent blue highlight on tap */
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* Grid placement for buttons */
@@ -105,23 +110,24 @@
         }
 
         #status {
-            margin-top: 25px;
-            padding: 15px;
-            font-size: 1.1em;
+            margin-top: 15px; /* Reduced margin */
+            padding: 10px; /* Reduced padding */
+            font-size: 1em; /* Reduced font size */
             color: var(--status-color);
             border: 1px solid var(--border-color);
             border-radius: 10px;
             background-color: var(--background-color);
-            max-width: 300px;
+            max-width: 280px; /* Slightly reduced max-width */
             margin-left: auto;
             margin-right: auto;
+            flex-shrink: 0;
         }
 
         #connectBtn {
-            width: 250px;
-            height: 60px;
-            margin: 30px auto; /* Centered with auto margins */
-            font-size: 1.2em;
+            width: 220px; /* Reduced width */
+            height: 50px; /* Reduced height */
+            margin: 20px auto; /* Reduced margin */
+            font-size: 1.1em; /* Reduced font size */
             background-color: var(--connect-button-bg);
             color: var(--button-text);
             border: none;
@@ -129,8 +135,9 @@
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            display: block; /* Ensures auto margins work */
+            display: block;
             -webkit-tap-highlight-color: transparent;
+            flex-shrink: 0;
         }
 
         #connectBtn:hover {
@@ -144,18 +151,19 @@
         }
 
         .toggle-container {
-            margin-top: 20px;
+            margin-top: 15px; /* Reduced margin */
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 10px;
+            flex-shrink: 0;
         }
 
         .switch {
             position: relative;
             display: inline-block;
-            width: 60px;
-            height: 34px;
+            width: 50px; /* Slightly reduced width */
+            height: 28px; /* Slightly reduced height */
         }
 
         .switch input {
@@ -180,8 +188,8 @@
         .slider:before {
             position: absolute;
             content: "";
-            height: 26px;
-            width: 26px;
+            height: 20px; /* Slightly reduced size */
+            width: 20px; /* Slightly reduced size */
             left: 4px;
             bottom: 4px;
             background-color: white;
@@ -199,37 +207,23 @@
         }
 
         input:checked + .slider:before {
-            -webkit-transform: translateX(26px);
-            -ms-transform: translateX(26px);
-            transform: translateX(26px);
+            -webkit-transform: translateX(20px); /* Adjusted for smaller slider */
+            -ms-transform: translateX(20px);
+            transform: translateX(20px);
         }
 
         .footer {
-            position: absolute;
-            bottom: auto;
-            left: 0;
+            position: relative; /* Changed to relative for flex container */
             width: 100%;
             padding: 10px 0;
-            font-size: 1.2em;
-            color: #4CAF50 ;
-            background-color: transparent; 
+            font-size: 0.8em; /* Reduced font size */
+            color: var(--footer-text-color);
+            background-color: transparent;
+            flex-shrink: 0;
+            margin-top: auto; /* Push footer to bottom in flex column */
         }
 
-        /* For smaller screens, adjust font sizes and button sizes if needed */
-        @media (max-width: 400px) {
-            .control-panel button {
-                font-size: 20px;
-                padding: 10px 0;
-            }
-            h1 {
-                font-size: 1.8em;
-            }
-            #connectBtn {
-                width: 200px;
-                font-size: 1em;
-                height: 50px;
-            }
-        }
+        /* No media queries needed for this specific request as the base styling handles it */
     </style>
 </head>
 <body class="dark-mode">
