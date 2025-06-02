@@ -236,6 +236,7 @@
         let gamepadIntervalId = null;
         let xboxGamepad = null;
         const gamepadDeadzone = 0.2; // Joystick deadzone to prevent accidental inputs
+        let lastCommandSent = 's'; // Store the last command sent to avoid redundancy
 
         const controlButtons = ['forwardBtn', 'leftBtn', 'stopBtn', 'rightBtn', 'backBtn'];
 
@@ -275,12 +276,19 @@
                 document.getElementById('status').textContent = "Status: Not connected to ESP32. Please connect first.";
                 return;
             }
-            const buffer = new Uint8Array([command.charCodeAt(0)]);
-            esp32Characteristic.writeValue(buffer)
-                .catch(error => {
-                    console.error('Error sending command:', error);
-                    document.getElementById('status').textContent = "Status: Error sending command";
-                });
+            // Only send if the command is different from the last one in joystick mode,
+            // or always send in manual mode (buttons imply an immediate action).
+            if (currentMode === 'manual' || command !== lastCommandSent) {
+                const buffer = new Uint8Array([command.charCodeAt(0)]);
+                esp32Characteristic.writeValue(buffer)
+                    .then(() => {
+                        lastCommandSent = command; // Update last sent command on success
+                    })
+                    .catch(error => {
+                        console.error('Error sending command:', error);
+                        document.getElementById('status').textContent = "Status: Error sending command";
+                    });
+            }
         }
 
         function toggleMode() {
@@ -308,6 +316,7 @@
 
         function startGamepadPolling() {
             if (gamepadIntervalId) clearInterval(gamepadIntervalId);
+            lastCommandSent = 's'; // Reset last command when starting joystick mode
             gamepadIntervalId = setInterval(checkGamepad, 100); // Check gamepad every 100ms
         }
 
@@ -318,6 +327,7 @@
             }
             xboxGamepad = null; // Clear gamepad reference
             sendCommand('s'); // Send stop command when exiting joystick mode
+            lastCommandSent = 's'; // Reset last command
         }
 
         function checkGamepad() {
